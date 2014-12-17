@@ -9,6 +9,10 @@ roll2d6 = dwtools.roll2d6
 class Character:
     """Basic character class to be built on with other character types"""
 
+    # Same value for all instances
+    score_modifiers = {1:-3, 2:-3, 3:-3, 4:-2, 5:-2, 6:-1, 7:-1, 8:-1,
+                       9:0, 10:0, 11:0, 12:0, 13:1, 14:1, 15:1, 16:2, 17:2, 18:3}
+    
     def __init__(self, name):
         self.name = name
 
@@ -19,18 +23,18 @@ class Character:
         self.xp = 0
 
         # Creating these dictionaries for changing later
-        self.score_modifiers = {1:-3, 2:-3, 3:-3, 4:-2, 5:-2, 6:-1, 7:-1, 8:-1,
-                                9:0, 10:0, 11:0, 12:0, 13:1, 14:1, 15:1, 16:2, 17:2, 18:3}
         self.ability_scores = {"STR":1, "DEX":1, "CON":1, "INT":1, "WIS":1, "CHA":1}
         self.modifiers = {}
         self.update_modifiers()
 
     def deal_damage(self, target):
+        """Rolls for damage based on your damage die"""
         damage = randint(1,self.damage_die)
         print(self.name,"dealt",damage,"points of damage to",target.name)
         target.take_damage(damage)
 
     def take_damage(self, damage):
+        """Reduce hp by an amount given by the damage taken. Checks for hp<=0"""
         self.hp -= damage
         print(self.name,"lost",damage,"hit points")
         if self.hp <= 0:
@@ -42,7 +46,7 @@ class Character:
         """Recalculate all the ability modifiers from the ability scores. Useful after
         levelling up."""
         for ability, score in self.ability_scores.items():
-            self.modifiers[ability] = self.score_modifiers[score]
+            self.modifiers[ability] = Character.score_modifiers[score]
 
     def basic_move(self, ability=None):
         """Moves in Dungeon World are the basic thing a character can do.
